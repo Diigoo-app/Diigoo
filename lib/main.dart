@@ -1,5 +1,4 @@
 import 'package:diigoo/routes/routes.dart';
-import 'package:diigoo/screens/SplashScreen/pages/SplashScreen.dart';
 import 'package:diigoo/theme/theme.dart';
 import 'package:flutter/material.dart';
 

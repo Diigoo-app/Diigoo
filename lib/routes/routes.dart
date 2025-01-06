@@ -1,3 +1,8 @@
+import 'package:diigoo/screens/AuthScreen/pages/OtpVerificationScreen.dart';
+import 'package:diigoo/screens/AuthScreen/pages/SignUpScreen.dart';
+import 'package:diigoo/screens/AuthScreen/pages/SignupDetailsScreen.dart';
+import 'package:diigoo/screens/AuthScreen/pages/face_scanning_screen.dart';
+import 'package:diigoo/screens/AuthScreen/pages/photo_verification_screen.dart';
 import 'package:diigoo/screens/SplashScreen/pages/IntroScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:diigoo/screens/SplashScreen/pages/SplashScreen.dart';
@@ -7,15 +12,30 @@ class Routes {
   static const String splash = '/';
   static const String logo = '/logo';
   static const String home = '/home';
+  static const String signUp = '/signUp';
+  static const String otpVerification = '/otpVerification';
+  static const String signUpDetails = '/signUpDetails';
+  static const String photoVerification = '/photoVerification';
+  static const String faceScanning = '/faceScanning';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
-        return _fadeRoute(const SplashScreen(), settings);
+        return _fadeRoute(const BallDropScreen(), settings);
       case logo:
         return _fadeRoute(const LogoScreen(), settings);
       case home:
         return _slideRoute(const IntroScreen(), settings);
+      case signUp:
+        return _slideRoute(const SignUpScreen(), settings);
+      case otpVerification:
+        return _defaultRoute(const OtpVerificationScreen(), settings);
+      case signUpDetails:
+        return _defaultRoute(const SignupDetailsScreen(), settings);
+      case photoVerification:
+        return _defaultRoute(const PhotoVerificationScreen(), settings);
+      case faceScanning:
+        return _defaultRoute(const FaceScanningScreen(), settings);
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -48,6 +68,13 @@ class Routes {
             .chain(CurveTween(curve: Curves.easeOut));
         return SlideTransition(position: animation.drive(tween), child: child);
       },
+    );
+  }
+
+  static MaterialPageRoute _defaultRoute(Widget page, RouteSettings settings) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (_) => page,
     );
   }
 }

@@ -44,7 +44,7 @@ class IntroScreen extends StatelessWidget {
             GradientButtonWidget(
               text: "Create An Account",
               onPressed: () {
-                Navigator.pushNamed(context, Routes.home);
+                Navigator.pushNamed(context, Routes.signUp);
               },
             ),
             const SizedBox(height: 15),

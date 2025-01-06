@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 class GradientButtonWidget extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
+  final Size size;
 
   const GradientButtonWidget(
-      {super.key, required this.text, required this.onPressed});
+      {super.key,
+      required this.text,
+      required this.onPressed,
+      this.size = const Size(0, 0)});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: size != const Size(0, 0) ? size.width : double.infinity,
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(

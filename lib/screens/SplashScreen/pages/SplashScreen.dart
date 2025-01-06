@@ -2,80 +2,97 @@ import 'package:diigoo/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class BallDropScreen extends StatefulWidget {
+  const BallDropScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _SplashScreenState createState() => _SplashScreenState();
+  _BallDropScreenState createState() => _BallDropScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _sizeAnimation;
-  late Animation<double> _opacityAnimation;
-  late double maxCircleSize;
+class _BallDropScreenState extends State<BallDropScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _dropController;
+  late Animation<double> _dropAnimation;
+  late AnimationController _expandController;
+  late Animation<double> _expandAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    final size = MediaQueryData.fromView(WidgetsBinding.instance.window).size;
-    maxCircleSize = sqrt(pow(size.width, 2) + pow(size.height, 2)) * 2;
-
-    // Initialize animation controller
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+    // Ball Drop Animation Controller
+    _dropController = AnimationController(
       vsync: this,
+      duration: const Duration(seconds: 2),
     );
 
-    _sizeAnimation = Tween<double>(begin: 0.1, end: maxCircleSize).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    // Drop Animation with bouncing effect
+    _dropAnimation = Tween<double>(begin: 0, end: 0.5).animate(
+      CurvedAnimation(parent: _dropController, curve: Curves.bounceOut),
     );
 
-    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    // Ball Expansion Animation Controller
+    _expandController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
     );
 
-    _controller.forward().whenComplete(() {
-      Navigator.pushReplacementNamed(context, Routes.logo);
+    _expandAnimation = Tween<double>(begin: 100, end: 2000).animate(
+      CurvedAnimation(parent: _expandController, curve: Curves.easeOut),
+    );
+
+    _dropController.forward().then((_) {
+      _expandController.forward().then((_) {
+        Navigator.pushNamed(context, Routes.logo);
+      });
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _dropController.dispose();
+    _expandController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Opacity(
-              opacity: _opacityAnimation.value,
-              child: Container(
-                width: _sizeAnimation.value,
-                height: _sizeAnimation.value * 5,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFA072FF),
-                      Color(0xFF5121FF),
-                    ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          double screenHeight = constraints.maxHeight;
+          double screenWidth = constraints.maxWidth;
+
+          return AnimatedBuilder(
+            animation: Listenable.merge([_dropAnimation, _expandAnimation]),
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  Positioned(
+                    left: screenWidth / 2 - _expandAnimation.value / 2,
+                    top: _dropAnimation.value * screenHeight -
+                        _expandAnimation.value / 2,
+                    child: Container(
+                      width: _expandAnimation.value,
+                      height: _expandAnimation.value,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFFA072FF),
+                            Color(0xFF5121FF),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            );
-          },
-        ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
