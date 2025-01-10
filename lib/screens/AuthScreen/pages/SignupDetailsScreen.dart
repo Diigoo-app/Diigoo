@@ -18,97 +18,109 @@ class _SignupDetailsScreenState extends State<SignupDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size; // Get device size
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white, // Background color
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(
           children: [
-            Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Back Button
-                    SizedBox(height: screenSize.height * 0.02),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const Icon(Icons.arrow_back,
-                            size: 28, color: Colors.black),
+            Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Back Button
+                          SizedBox(height: screenHeight * 0.02),
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: const Icon(Icons.arrow_back,
+                                  size: 28, color: Colors.black),
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.04),
+
+                          // Title
+                          Text(
+                            "Choose username",
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.06,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+
+                          // Description
+                          Text(
+                            "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.04,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.03),
+
+                          // Username Input Field
+                          CustomTextFieldWidget(
+                            hintText: "Eg: Rajesh_kondeti_8",
+                            suffixIcon: Icons.check,
+                            keyboardType: TextInputType.text,
+                            controller: _usernameController,
+                          ),
+                          SizedBox(height: screenHeight * 0.04),
+
+                          // Birthday Section
+                          Text(
+                            "When’s your b’day?",
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.06,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+
+                          Text(
+                            'We’ll never share this with other users. We’re just making sure you’re old enough to use vibe!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.04,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.03),
+
+                          // Date Picker
+                          BirthdateSelectionWidget(
+                            onDateSelected: (day, month, year) {
+                              log("Selected Date: $day-$month-$year");
+                            },
+                          ),
+                          SizedBox(height: screenHeight * 0.05),
+
+                          // Gender Selection
+                          const GenderSelectionWidget(),
+                          SizedBox(height: screenHeight * 0.08),
+                        ],
                       ),
                     ),
-                    SizedBox(height: screenSize.height * 0.05),
-
-                    // Title
-                    const Text(
-                      "Choose username",
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: screenSize.height * 0.02),
-
-                    // Description
-                    const Text(
-                      "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                    SizedBox(height: screenSize.height * 0.03),
-
-                    // Username Input Field
-                    CustomTextFieldWidget(
-                      hintText: "Eg: Rajesh_kondeti_8",
-                      suffixIcon: Icons.check,
-                      keyboardType: TextInputType.text,
-                      controller: _usernameController,
-                    ),
-                    SizedBox(height: screenSize.height * 0.04),
-
-                    // Birthday Section
-                    const Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "When’s your b’day?",
-                        style: TextStyle(
-                            fontSize: 23, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(height: screenSize.height * 0.02),
-                    const Text(
-                      'We’ll never share this with other users. We’re just making sure you’re old enough to use vibe!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                    SizedBox(height: screenSize.height * 0.03),
-
-                    // Date Picker
-                    BirthdateSelectionWidget(
-                      onDateSelected: (day, month, year) {
-                        log("Selected Date: $day-$month-$year");
-                      },
-                    ),
-                    SizedBox(height: screenSize.height * 0.05),
-
-                    // Gender Selection
-                    const GenderSelectionWidget(),
-
-                    SizedBox(height: screenSize.height * 0.1),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-
-            // Positioned Button at Bottom Right
             Positioned(
-              bottom: screenSize.height * 0.001,
-              right: screenSize.width * 0.05,
+              bottom: screenHeight * 0.03,
+              right: screenWidth * 0.05,
               child: GradientButtonWidget(
-                size: const Size(150, 50),
+                size: Size(screenWidth * 0.45, screenHeight * 0.06),
                 text: "Next",
                 onPressed: () {
                   Navigator.pushNamed(context, Routes.photoVerification);

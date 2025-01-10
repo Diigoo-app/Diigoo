@@ -35,32 +35,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 40),
+            SizedBox(height: screenHeight * 0.05), // Responsive spacing
+
+            // Animated Image
             Center(
               child: AnimatedSwitcher(
                 duration: const Duration(seconds: 1),
                 child: Image.asset(
                   images[currentIndex],
                   key: ValueKey<String>(images[currentIndex]),
-                  width: 280,
-                  // height: 200,
+                  width: screenWidth * 0.68, // Responsive image width
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
-            Flexible(
+
+            Expanded(
               child: DraggableScrollableSheet(
                 initialChildSize: 0.95,
                 minChildSize: 0.95,
                 maxChildSize: 0.95,
                 builder: (context, scrollController) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 30),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05, // Responsive padding
+                      vertical: screenHeight * 0.03,
+                    ),
                     decoration: const BoxDecoration(
                       color: Color(0xFFF6F6F6),
                       borderRadius: BorderRadius.only(
@@ -81,29 +89,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             "Create An Account",
                             style: TextStyle(
-                              fontSize: 28,
+                              fontSize:
+                                  screenWidth * 0.07, // Responsive font size
                               fontWeight: FontWeight.w600,
                               color: Colors.black,
                             ),
                           ),
-                          const SizedBox(height: 25),
+
+                          SizedBox(height: screenHeight * 0.03),
 
                           // Phone Number Label
-                          const Align(
+                          Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               "Phone Number",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: screenWidth * 0.045,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.black87,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 25),
+
+                          SizedBox(height: screenHeight * 0.02),
 
                           CustomTextFieldWidget(
                             hintText: "Phone Number",
@@ -112,37 +123,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: _numberController,
                           ),
 
-                          const SizedBox(height: 30),
+                          SizedBox(height: screenHeight * 0.04),
 
                           // Send OTP Button
-                          GradientButtonWidget(
-                            text: "Send OTP",
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                  context, Routes.otpVerification);
-                            },
+                          SizedBox(
+                            width: screenWidth * 0.9, // Responsive button width
+                            child: GradientButtonWidget(
+                              text: "Send OTP",
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, Routes.otpVerification);
+                              },
+                            ),
                           ),
 
+                          SizedBox(height: screenHeight * 0.03),
+
                           // Login Option
-                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Already Have An Account? "),
+                              Text(
+                                "Already Have An Account? ",
+                                style: TextStyle(fontSize: screenWidth * 0.04),
+                              ),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(context, Routes.home);
                                 },
-                                child: const Text(
+                                child: Text(
                                   "Log In",
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF5121FF)),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: screenWidth * 0.04,
+                                    color: const Color(0xFF5121FF),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 15),
+
+                          SizedBox(height: screenHeight * 0.02),
                         ],
                       ),
                     ),
