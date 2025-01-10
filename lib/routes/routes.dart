@@ -3,6 +3,8 @@ import 'package:diigoo/screens/AuthScreen/pages/SignUpScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/SignupDetailsScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/face_scanning_screen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/photo_verification_screen.dart';
+import 'package:diigoo/screens/AuthScreen/pages/profile_edit.dart';
+import 'package:diigoo/screens/AuthScreen/pages/profile_wallet.dart';
 import 'package:diigoo/screens/SplashScreen/pages/IntroScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:diigoo/screens/SplashScreen/pages/SplashScreen.dart';
@@ -17,6 +19,8 @@ class Routes {
   static const String signUpDetails = '/signUpDetails';
   static const String photoVerification = '/photoVerification';
   static const String faceScanning = '/faceScanning';
+  static const String profileEdit = '/profileEdit';
+  static const String profileWallet = '/profileWallet';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -36,6 +40,21 @@ class Routes {
         return _defaultRoute(const PhotoVerificationScreen(), settings);
       case faceScanning:
         return _defaultRoute(const FaceScanningScreen(), settings);
+      // ignore: constant_pattern_never_matches_value_type
+      case profileEdit:
+        return _defaultRoute(const ProfileEdit(), settings);
+      case profileWallet:
+        final args =
+            settings.arguments as Map<String, dynamic>?; // Get passed arguments
+        return _defaultRoute(
+          ProfileWallet(
+            userName: args?['userName'] ?? '', // Pass the username
+            fullName: args?['fullName'] ?? '', // Pass the full name
+            profileImage: args?['profileImage'], // Pass the profile image
+          ),
+          settings,
+        );
+
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
