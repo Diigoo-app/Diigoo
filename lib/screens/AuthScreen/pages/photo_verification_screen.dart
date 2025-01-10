@@ -70,7 +70,7 @@ class PhotoVerificationScreen extends StatelessWidget {
                 text: "Let's Verify",
                 onPressed: () {
                   // Navigate to next screen
-                  Navigator.pushNamed(context, Routes.faceScanning);
+                  Navigator.pushNamed(context, Routes.profileEdit);
                 },
               ),
             ),
