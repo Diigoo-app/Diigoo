@@ -51,6 +51,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
       body: DraggableScrollableSheet(
@@ -59,7 +62,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
         maxChildSize: 0.90,
         builder: (context, scrollController) {
           return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05, // Responsive padding
+              vertical: screenHeight * 0.02,
+            ),
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
@@ -87,8 +93,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                   ),
                 ),
 
+                SizedBox(height: screenHeight * 0.009),
+
+                // OTP Image with Animation
                 SizedBox(
-                  height: 200,
+                  height: screenHeight * 0.2, // Adjusted image height
                   child: AnimatedOpacity(
                     opacity: _showImage ? 1.0 : 0.0,
                     duration: const Duration(seconds: 1),
@@ -96,58 +105,73 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                       position: _slideUpAnimation,
                       child: Image.asset(
                         'assets/images/otp.png',
-                        width: 250,
+                        width: screenWidth * 0.6, // Responsive image width
                         fit: BoxFit.contain,
                       ),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: screenHeight * 0.01),
 
                 // OTP Heading
-                const Text(
+                Text(
                   "Verify OTP",
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: screenWidth * 0.07, // Responsive font size
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Text(
+
+                SizedBox(height: screenHeight * 0.01),
+
+                Text(
                   "Please enter the 6-digit code sent to your email.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.04, // Responsive text size
+                    color: Colors.grey,
+                  ),
                 ),
-                const SizedBox(height: 40),
+
+                SizedBox(height: screenHeight * 0.05),
 
                 // OTP Input Fields
                 const CustomOtpField(),
 
-                const SizedBox(height: 40),
+                SizedBox(height: screenHeight * 0.04),
 
                 // Verify Button
-                GradientButtonWidget(
-                  text: "Verify",
-                  onPressed: () {
-                    Navigator.pushNamed(context, Routes.signUpDetails);
-                  },
+                SizedBox(
+                  width: screenWidth * 0.8, // Responsive button width
+                  child: GradientButtonWidget(
+                    text: "Verify",
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.signUpDetails);
+                    },
+                  ),
                 ),
 
+                SizedBox(height: screenHeight * 0.03),
+
                 // Resend OTP Option
-                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Yet to receive the code? "),
+                    Text(
+                      "Yet to receive the code? ",
+                      style: TextStyle(fontSize: screenWidth * 0.04),
+                    ),
                     GestureDetector(
                       onTap: () {},
-                      child: const Text(
+                      child: Text(
                         "Resend",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF5121FF)),
+                          fontWeight: FontWeight.bold,
+                          fontSize: screenWidth * 0.04,
+                          color: const Color(0xFF5121FF),
+                        ),
                       ),
                     ),
                   ],
@@ -155,21 +179,27 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
 
                 const Spacer(),
 
+                // "Already Have An Account?" Section - Fixed at Bottom
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  padding: EdgeInsets.only(bottom: screenHeight * 0.03),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already Have An Account? "),
+                      Text(
+                        "Already Have An Account? ",
+                        style: TextStyle(fontSize: screenWidth * 0.04),
+                      ),
                       GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(context, Routes.home);
                         },
-                        child: const Text(
+                        child: Text(
                           "Log In",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF5121FF)),
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth * 0.04,
+                            color: const Color(0xFF5121FF),
+                          ),
                         ),
                       ),
                     ],
