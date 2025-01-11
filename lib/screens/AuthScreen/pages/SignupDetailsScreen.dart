@@ -37,7 +37,7 @@ class _SignupDetailsScreenState extends State<SignupDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Back Button
-                          SizedBox(height: screenHeight * 0.02),
+                          SizedBox(height: screenHeight * 0.015),
                           Align(
                             alignment: Alignment.topLeft,
                             child: GestureDetector(
@@ -46,7 +46,7 @@ class _SignupDetailsScreenState extends State<SignupDetailsScreen> {
                                   size: 28, color: Colors.black),
                             ),
                           ),
-                          SizedBox(height: screenHeight * 0.04),
+                          SizedBox(height: screenHeight * 0.02),
 
                           // Title
                           Text(

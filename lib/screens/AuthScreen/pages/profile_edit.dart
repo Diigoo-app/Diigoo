@@ -1,4 +1,3 @@
-import 'package:diigoo/routes/routes.dart';
 import 'package:diigoo/screens/AuthScreen/pages/profile_wallet.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -22,34 +21,103 @@ class _ProfileEditState extends State<ProfileEdit> {
   File? _selectedImage;
 
   void _showImagePickerDialog() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.camera_alt, color: Colors.purple),
-                title: const Text("Take Photo"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library, color: Colors.purple),
-                title: const Text("Choose from Gallery"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    Future.delayed(Duration.zero, () {
+      showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (BuildContext context) {
+          final double screenWidth = MediaQuery.of(context).size.width;
+          final double screenHeight = MediaQuery.of(context).size.height;
+
+          return Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05,
+              vertical: screenHeight * 0.03,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.grey[200], // Matching your design's grey background
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Image Icon at Top
+                Container(
+                  padding: EdgeInsets.all(screenWidth * 0.04),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: screenWidth * 0.15, // Responsive icon size
+                    color: Colors.purple,
+                  ),
+                ),
+
+                SizedBox(height: screenHeight * 0.02),
+
+                // Take Photo Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.02,
+                        horizontal: screenWidth * 0.07),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.camera_alt, color: Colors.black),
+                  label: Text(
+                    "Take Photo",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    // TODO: Implement take photo functionality
+                    Navigator.pop(context);
+                  },
+                ),
+
+                SizedBox(height: screenHeight * 0.015),
+
+                // Choose from Photos Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.02,
+                        horizontal: screenWidth * 0.07),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.photo_library, color: Colors.black),
+                  label: Text(
+                    "Choose From Photos",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    });
   }
 
   @override
@@ -167,9 +235,13 @@ class _ProfileEditState extends State<ProfileEdit> {
 
                                   Positioned(
                                     bottom: 0,
-                                    right: 0,
+                                    right: -screenWidth * 0.02,
                                     child: GestureDetector(
-                                      onTap: _showImagePickerDialog,
+                                      onTap: () {
+                                        print("Add button tapped");
+                                        _showImagePickerDialog();
+                                      },
+                                      behavior: HitTestBehavior.opaque,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
