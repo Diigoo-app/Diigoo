@@ -19,14 +19,20 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           "Select Your Gender",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: screenWidth * 0.06, // Responsive font size
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: screenHeight * 0.02), // Responsive spacing
 
         // Gender Selection Row
         Row(
@@ -40,10 +46,10 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
                 });
               },
               child: Container(
-                width: 100,
-                height: 120,
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.symmetric(horizontal: 10),
+                width: screenWidth * 0.25, // Responsive width
+                height: screenHeight * 0.13, // Responsive height
+                padding: EdgeInsets.all(screenWidth * 0.025),
+                margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE4E4E4),
                   border: Border.all(
@@ -67,8 +73,8 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
                   children: [
                     // Gender Image
                     Container(
-                      width: 55,
-                      height: 55,
+                      width: screenWidth * 0.14, // Responsive size
+                      height: screenWidth * 0.14,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.white,
@@ -80,21 +86,21 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
                       child: ClipOval(
                         child: Image.asset(
                           gender["image"]!,
-                          width: 50,
-                          height: 50,
+                          width: screenWidth * 0.15,
+                          height: screenWidth * 0.15,
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: screenHeight * 0.01),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Radio Button
                         Container(
-                          width: 16,
-                          height: 16,
+                          width: screenWidth * 0.04,
+                          height: screenWidth * 0.04,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -105,12 +111,13 @@ class _GenderSelectionWidgetState extends State<GenderSelectionWidget> {
                                 : Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: screenWidth * 0.01),
 
                         Text(
                           gender["label"]!,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize:
+                                screenWidth * 0.04, // Responsive font size
                             fontWeight: FontWeight.bold,
                             color: isSelected
                                 ? AppColors.primaryLight
