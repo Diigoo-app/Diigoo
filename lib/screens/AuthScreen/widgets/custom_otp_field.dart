@@ -31,14 +31,13 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
         FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
       } else {
         _focusNodes[index]
-            .unfocus(); // Hide keyboard when the last digit is entered
+            .unfocus(); // Hide keyboard when last digit is entered
       }
     }
   }
 
   void _handleBackspace(int index) {
     if (index > 0) {
-      // Move back to the previous field
       _controllers[index - 1].clear();
       FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
     }
@@ -46,6 +45,9 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(6, (index) {
@@ -59,9 +61,10 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
             }
           },
           child: Container(
-            width: 50,
-            height: 55,
-            margin: const EdgeInsets.symmetric(horizontal: 5),
+            width: screenWidth * 0.12, // Scales OTP box width
+            height: screenHeight * 0.07, // Scales OTP box height
+            margin: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.015), // Adjusts spacing
             decoration: BoxDecoration(
               border: Border.all(color: Colors.purple),
               borderRadius: BorderRadius.circular(10),
@@ -72,7 +75,10 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               maxLength: 1,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: screenWidth * 0.06, // Responsive font size
+                fontWeight: FontWeight.bold,
+              ),
               decoration: const InputDecoration(
                 counterText: "", // Hides the character counter
                 border: InputBorder.none,

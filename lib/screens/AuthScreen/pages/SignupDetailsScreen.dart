@@ -108,7 +108,7 @@ class _SignupDetailsScreenState extends State<SignupDetailsScreen> {
 
                           // Gender Selection
                           const GenderSelectionWidget(),
-                          SizedBox(height: screenHeight * 0.08),
+                          SizedBox(height: screenHeight * 0.09),
                         ],
                       ),
                     ),
@@ -117,7 +117,7 @@ class _SignupDetailsScreenState extends State<SignupDetailsScreen> {
               ],
             ),
             Positioned(
-              bottom: screenHeight * 0.03,
+              bottom: screenHeight * 0.01,
               right: screenWidth * 0.05,
               child: GradientButtonWidget(
                 size: Size(screenWidth * 0.45, screenHeight * 0.06),
