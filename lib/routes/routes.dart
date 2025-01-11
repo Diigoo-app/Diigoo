@@ -1,4 +1,6 @@
+import 'package:diigoo/screens/AuthScreen/pages/LoginScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/OtpVerificationScreen.dart';
+import 'package:diigoo/screens/AuthScreen/pages/Otp_Login.dart';
 import 'package:diigoo/screens/AuthScreen/pages/SignUpScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/SignupDetailsScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/face_scanning_screen.dart';
@@ -21,6 +23,8 @@ class Routes {
   static const String faceScanning = '/faceScanning';
   static const String profileEdit = '/profileEdit';
   static const String profileWallet = '/profileWallet';
+  static const String otpLogin = '/otpLogin';
+  static const String loginScreen = '/loginScreen';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -40,17 +44,20 @@ class Routes {
         return _defaultRoute(const PhotoVerificationScreen(), settings);
       case faceScanning:
         return _defaultRoute(const FaceScanningScreen(), settings);
-      // ignore: constant_pattern_never_matches_value_type
+
       case profileEdit:
         return _defaultRoute(const ProfileEdit(), settings);
+      case otpLogin:
+        return _defaultRoute(const OtpLogin(), settings);
+      case loginScreen:
+        return _defaultRoute(const Loginscreen(), settings);
       case profileWallet:
-        final args =
-            settings.arguments as Map<String, dynamic>?; // Get passed arguments
+        final args = settings.arguments as Map<String, dynamic>?;
         return _defaultRoute(
           ProfileWallet(
-            userName: args?['userName'] ?? '', // Pass the username
-            fullName: args?['fullName'] ?? '', // Pass the full name
-            profileImage: args?['profileImage'], // Pass the profile image
+            userName: args?['userName'] ?? '',
+            fullName: args?['fullName'] ?? '',
+            profileImage: args?['profileImage'],
           ),
           settings,
         );
