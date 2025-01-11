@@ -172,7 +172,8 @@ class _ProfileWalletState extends State<ProfileWallet> {
                         size: const Size(150, 50),
                         text: "Next",
                         onPressed: () {
-                          Navigator.pushNamed(context, Routes.profileEdit);
+                          Navigator.pushNamed(
+                              context, Routes.signupHashtagPage);
                         },
                       ),
                     ),
