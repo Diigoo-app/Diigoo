@@ -1,14 +1,16 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:camera/camera.dart';
+import 'package:diigoo/routes/routes.dart';
+import 'package:diigoo/widgets/gradient_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
 class FaceScanningScreen extends StatefulWidget {
-  const FaceScanningScreen({super.key});
+  const FaceScanningScreen({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _FaceScanningScreenState createState() => _FaceScanningScreenState();
 }
 
@@ -16,31 +18,54 @@ class _FaceScanningScreenState extends State<FaceScanningScreen> {
   CameraController? _cameraController;
   late FaceDetector _faceDetector;
   bool _isDetecting = false;
-  bool _faceInsideRegion = false;
   double _progress = 0;
+  bool _verificationFailed = false;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    _faceDetector = FaceDetector(
+      options: FaceDetectorOptions(
+        enableContours: true,
+        enableLandmarks: true,
+        performanceMode: FaceDetectorMode.accurate,
+      ),
+    );
     _initializeCamera();
-    _faceDetector = FaceDetector(options: FaceDetectorOptions());
   }
 
   Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    _cameraController = CameraController(cameras[1], ResolutionPreset.medium);
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        log("No cameras available.");
+        return;
+      }
 
-    await _cameraController!.initialize().then((_) {
+      final frontCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      );
+
+      _cameraController = CameraController(frontCamera, ResolutionPreset.high);
+
+      await _cameraController!.initialize();
       if (!mounted) return;
+
       setState(() {});
       _startFaceDetection();
-    }).catchError((e) {
-      debugPrint("Error initializing camera: $e");
-    });
+    } catch (e) {
+      log("Error initializing camera: $e");
+    }
   }
 
   void _startFaceDetection() {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      log("Camera controller not initialized.");
+      return;
+    }
+
     _cameraController!.startImageStream((CameraImage image) async {
       if (_isDetecting) return;
       _isDetecting = true;
@@ -50,64 +75,52 @@ class _FaceScanningScreenState extends State<FaceScanningScreen> {
             await _faceDetector.processImage(_convertCameraImage(image));
 
         if (faces.isNotEmpty) {
-          setState(() {
-            _faceInsideRegion = _isFaceCentered(faces.first);
-            if (_faceInsideRegion) {
-              _startProgress();
-            } else {
-              _resetProgress();
-            }
-          });
+          log("Face detected!");
+          _startProgress();
         } else {
-          setState(() {
-            _faceInsideRegion = false;
-            _resetProgress();
-          });
+          log("No face detected.");
+          _resetProgress();
         }
       } catch (e) {
-        debugPrint("Error detecting face: $e");
+        log("Error during face detection: $e");
+      } finally {
+        _isDetecting = false;
       }
-
-      _isDetecting = false;
     });
   }
 
   InputImage _convertCameraImage(CameraImage image) {
     final WriteBuffer buffer = WriteBuffer();
-    for (Plane plane in image.planes) {
+    for (final plane in image.planes) {
       buffer.putUint8List(plane.bytes);
     }
     final bytes = buffer.done().buffer.asUint8List();
+
+    InputImageRotation rotation = InputImageRotation.rotation270deg;
 
     return InputImage.fromBytes(
       bytes: bytes,
       metadata: InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
-        rotation: InputImageRotation.rotation0deg,
+        rotation: rotation,
         format: InputImageFormat.nv21,
         bytesPerRow: image.planes.first.bytesPerRow,
       ),
     );
   }
 
-  bool _isFaceCentered(Face face) {
-    double faceCenterX = face.boundingBox.center.dx;
-    double faceCenterY = face.boundingBox.center.dy;
-
-    double screenCenterX = MediaQuery.of(context).size.width / 2;
-    double screenCenterY = MediaQuery.of(context).size.height / 2;
-
-    return (faceCenterX - screenCenterX).abs() < 50 &&
-        (faceCenterY - screenCenterY).abs() < 80;
-  }
-
   void _startProgress() {
-    _timer ??= Timer.periodic(const Duration(milliseconds: 300), (timer) {
+    if (_progress >= 100 || _timer != null) return;
+    _timer?.cancel();
+
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_progress >= 100) {
         timer.cancel();
+        _timer = null;
+        _stopAndNavigate();
       } else {
         setState(() {
-          _progress += 10;
+          _progress += 25;
         });
       }
     });
@@ -115,97 +128,124 @@ class _FaceScanningScreenState extends State<FaceScanningScreen> {
 
   void _resetProgress() {
     _timer?.cancel();
-    setState(() {
-      _progress = 0;
+
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      if (_progress > 0) {
+        setState(() {
+          _progress -= 5;
+        });
+      } else {
+        timer.cancel();
+        _timer = null;
+        setState(() {
+          _verificationFailed = true;
+        });
+      }
+    });
+  }
+
+  void _stopAndNavigate() {
+    if (_cameraController != null &&
+        _cameraController!.value.isStreamingImages) {
+      _cameraController!.stopImageStream();
+    }
+
+    _cameraController!.takePicture().then((XFile file) {
+      if (mounted) {
+        Navigator.pushNamed(
+          context,
+          Routes.photoVerificationConfirm,
+          arguments: {'imagePath': file.path},
+        );
+      }
+    }).catchError((e) {
+      log("Error capturing image: $e");
     });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _cameraController?.dispose();
     _faceDetector.close();
-    _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Stack(
         children: [
-          _cameraController == null || !_cameraController!.value.isInitialized
-              ? const Center(child: CircularProgressIndicator())
-              : CameraPreview(_cameraController!),
-
-          // Face Frame Overlay
-          Positioned(
-            left: 50,
-            right: 50,
-            top: 150,
-            child: Container(
-              width: 250,
-              height: 300,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: _faceInsideRegion ? Colors.green : Colors.red,
-                  width: 4,
-                ),
-                borderRadius: BorderRadius.circular(15),
-              ),
-            ),
+          Positioned.fill(
+            child: _cameraController == null ||
+                    !_cameraController!.value.isInitialized
+                ? const Center(child: CircularProgressIndicator())
+                : AspectRatio(
+                    aspectRatio: _cameraController!.value.aspectRatio,
+                    child: CameraPreview(_cameraController!),
+                  ),
           ),
-
-          // Face Scanning Title
-          const Positioned(
-            top: 50,
+          Positioned(
+            top: screenSize.height * 0.09,
             left: 0,
             right: 0,
-            child: Center(
+            child: const Center(
               child: Text(
                 "Face Scanning",
                 style: TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w400,
                   color: Colors.white,
                 ),
               ),
             ),
           ),
-
-          // Progress Indicator & Status Text
           Positioned(
-            bottom: 100,
-            left: 0,
-            right: 0,
+            bottom: screenSize.height * 0.09,
+            left: 20,
+            right: 20,
             child: Column(
               children: [
+                _verificationFailed
+                    ? const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 35,
+                      )
+                    : Text(
+                        "${_progress.toInt()}%",
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                const SizedBox(height: 10),
                 Text(
-                  "${_progress.toInt()}%",
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  _verificationFailed
+                      ? "Verification failed, try again."
+                      : "Hold steady...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: _verificationFailed ? Colors.red : Colors.black,
                   ),
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  _faceInsideRegion
-                      ? "Verifying Your Face"
-                      : "Position Your Face Inside the Frame",
-                  style: const TextStyle(fontSize: 16, color: Colors.white70),
-                ),
+                const SizedBox(height: 30),
+                if (_verificationFailed)
+                  GradientButtonWidget(
+                    size: const Size(150, 50),
+                    text: "Try Again",
+                    onPressed: () {
+                      setState(() {
+                        _verificationFailed = false;
+                        _progress = 0;
+                      });
+                    },
+                  ),
               ],
-            ),
-          ),
-
-          // Back Button
-          Positioned(
-            top: 50,
-            left: 20,
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child:
-                  const Icon(Icons.arrow_back, size: 28, color: Colors.white),
             ),
           ),
         ],
