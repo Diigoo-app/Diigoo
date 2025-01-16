@@ -52,7 +52,7 @@ class IntroScreen extends StatelessWidget {
             OutlinedButtonWidget(
               text: "I Already Have An Account",
               onPressed: () {
-                Navigator.pushNamed(context, Routes.logo);
+                Navigator.pushNamed(context, Routes.loginScreen);
               },
             ),
           ],
