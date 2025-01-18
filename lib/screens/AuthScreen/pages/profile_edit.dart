@@ -216,7 +216,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                   ),
                                   Positioned(
                                     bottom: 0,
-                                    right: 0,
+                                    right: -screenWidth * 0.02,
                                     child: GestureDetector(
                                       onTap: _showImagePickerDialog,
                                       child: CircleAvatar(

@@ -1,8 +1,10 @@
 import 'package:diigoo/screens/AuthScreen/pages/LoginScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/OtpVerificationScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/Otp_Login.dart';
+import 'package:diigoo/screens/AuthScreen/pages/PhotoVerificationConfirm.dart';
 import 'package:diigoo/screens/AuthScreen/pages/SignUpScreen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/SignupDetailsScreen.dart';
+import 'package:diigoo/screens/AuthScreen/pages/SignupHashtagPage.dart';
 import 'package:diigoo/screens/AuthScreen/pages/face_scanning_screen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/photo_verification_screen.dart';
 import 'package:diigoo/screens/AuthScreen/pages/profile_edit.dart';
@@ -25,6 +27,8 @@ class Routes {
   static const String profileWallet = '/profileWallet';
   static const String otpLogin = '/otpLogin';
   static const String loginScreen = '/loginScreen';
+  static const String signupHashtagPage = '/signupHashtagPage';
+  static const String photoVerificationConfirm = '/photoVerificationConfirm';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -61,7 +65,14 @@ class Routes {
           ),
           settings,
         );
-
+      case signupHashtagPage:
+        return _defaultRoute(const SignupHashtagPage(), settings);
+      case photoVerificationConfirm:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return _defaultRoute(
+          PhotoVerificationConfirm(imagePath: args?['imagePath'] ?? ''),
+          settings,
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

@@ -7,10 +7,10 @@ class PhotoVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size; // Get device size
+    final Size screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white, // Background color
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(
           children: [
@@ -70,7 +70,7 @@ class PhotoVerificationScreen extends StatelessWidget {
                 text: "Let's Verify",
                 onPressed: () {
                   // Navigate to next screen
-                  Navigator.pushNamed(context, Routes.profileEdit);
+                  Navigator.pushNamed(context, Routes.faceScanning);
                 },
               ),
             ),
