@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:diigoo/routes/routes.dart';
-import 'package:diigoo/theme/theme.dart';
+
 import 'package:flutter/material.dart';
 import 'package:diigoo/widgets/gradient_button.dart';
 

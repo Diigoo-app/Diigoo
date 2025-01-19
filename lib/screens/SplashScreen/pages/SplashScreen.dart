@@ -1,6 +1,5 @@
 import 'package:diigoo/routes/routes.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 class BallDropScreen extends StatefulWidget {
   const BallDropScreen({super.key});
