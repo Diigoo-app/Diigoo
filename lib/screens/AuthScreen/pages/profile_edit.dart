@@ -1,6 +1,7 @@
-import 'package:diigoo/screens/AuthScreen/pages/profile_wallet.dart';
-import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:diigoo/screens/AuthScreen/pages/profile_wallet.dart';
 import 'package:diigoo/screens/AuthScreen/widgets/profile_input_fields.dart';
 import 'package:diigoo/widgets/gradient_button.dart';
 
@@ -19,105 +20,92 @@ class _ProfileEditState extends State<ProfileEdit> {
   String selectedGender = "Female";
 
   File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(source: source);
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      print("Error picking image: $e");
+    }
+  }
 
   void _showImagePickerDialog() {
-    Future.delayed(Duration.zero, () {
-      showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        builder: (BuildContext context) {
-          final double screenWidth = MediaQuery.of(context).size.width;
-          final double screenHeight = MediaQuery.of(context).size.height;
-
-          return Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.05,
-              vertical: screenHeight * 0.03,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.grey[200], // Matching your design's grey background
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromRGBO(227, 227, 227, 1.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          content: Container(
+            width: double.maxFinite,
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Image Icon at Top
-                Container(
-                  padding: EdgeInsets.all(screenWidth * 0.04),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.image_outlined,
-                    size: screenWidth * 0.15, // Responsive icon size
-                    color: Colors.purple,
-                  ),
+                Column(
+                  children: [
+                    Image.asset('assets/images/gallery_icon.png'),
+                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
+                  ],
                 ),
-
-                SizedBox(height: screenHeight * 0.02),
-
-                // Take Photo Button
                 ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                        vertical: screenHeight * 0.02,
-                        horizontal: screenWidth * 0.07),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
                   icon: const Icon(Icons.camera_alt, color: Colors.black),
-                  label: Text(
+                  label: const Text(
                     "Take Photo",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: screenWidth * 0.045,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600),
                   ),
-                  onPressed: () {
-                    // TODO: Implement take photo functionality
-                    Navigator.pop(context);
-                  },
-                ),
-
-                SizedBox(height: screenHeight * 0.015),
-
-                // Choose from Photos Button
-                ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                        vertical: screenHeight * 0.02,
-                        horizontal: screenWidth * 0.07),
+                    minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  icon: const Icon(Icons.photo_library, color: Colors.black),
-                  label: Text(
-                    "Choose From Photos",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: screenWidth * 0.045,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
                   onPressed: () {
                     Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
                   },
+                  icon: const Icon(Icons.photo_library, color: Colors.black),
+                  label: const Text(
+                    "Choose From Gallery",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
               ],
             ),
-          );
-        },
-      );
-    });
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -127,19 +115,20 @@ class _ProfileEditState extends State<ProfileEdit> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Stack(
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: screenHeight *
+                        0.3, // Ensures enough space for the stack
+                    child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        // Background Image
                         Container(
-                          height: screenHeight * 0.25, // 32% of screen height
+                          height: screenHeight * 0.25,
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(30),
@@ -153,7 +142,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                         ),
                         // Back Button
                         Positioned(
-                          top: screenHeight * 0.02, // 5% from top
+                          top: screenHeight * 0.04,
                           left: screenWidth * 0.02,
                           child: IconButton(
                             icon: const Icon(Icons.arrow_back,
@@ -164,13 +153,13 @@ class _ProfileEditState extends State<ProfileEdit> {
                           ),
                         ),
                         Positioned(
-                          top: screenHeight * 0.03, // Adjusted dynamically
+                          top: screenHeight * 0.06,
                           left: screenWidth * 0.35,
                           child: Image.asset('assets/images/Group.png',
                               width: screenWidth * 0.3),
                         ),
                         Positioned(
-                          top: screenHeight * 0.1,
+                          top: screenHeight * 0.116,
                           left: 0,
                           right: 0,
                           child: Column(
@@ -207,55 +196,36 @@ class _ProfileEditState extends State<ProfileEdit> {
                               Stack(
                                 clipBehavior: Clip.none,
                                 children: [
-                                  // Profile Picture
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 10,
-                                          spreadRadius: 2,
-                                        ),
-                                      ],
-                                    ),
+                                  CircleAvatar(
+                                    radius: screenWidth * 0.142,
+                                    backgroundColor: Colors.white,
                                     child: CircleAvatar(
                                       radius: screenWidth * 0.13,
-                                      backgroundColor: Colors.white,
-                                      child: CircleAvatar(
-                                        radius: screenWidth * 0.12,
-                                        backgroundImage: _selectedImage != null
-                                            ? FileImage(_selectedImage!)
-                                                as ImageProvider
-                                            : const AssetImage(
-                                                'assets/images/Profile.png'),
-                                      ),
+                                      backgroundColor: Colors.grey[300],
+                                      backgroundImage: _selectedImage != null
+                                          ? FileImage(_selectedImage!)
+                                          : null,
+                                      child: _selectedImage == null
+                                          ? Icon(
+                                              Icons.person,
+                                              size: screenWidth * 0.12,
+                                              color: Colors.grey[700],
+                                            )
+                                          : null,
                                     ),
                                   ),
-
                                   Positioned(
                                     bottom: 0,
                                     right: -screenWidth * 0.02,
                                     child: GestureDetector(
-                                      onTap: () {
-                                        print("Add button tapped");
-                                        _showImagePickerDialog();
-                                      },
-                                      behavior: HitTestBehavior.opaque,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
+                                      onTap: _showImagePickerDialog,
+                                      child: CircleAvatar(
+                                        radius: screenWidth * 0.05,
+                                        backgroundColor: Colors.grey[400],
+                                        child: Icon(
+                                          Icons.add,
+                                          size: screenWidth * 0.05,
                                           color: Colors.white,
-                                          border:
-                                              Border.all(color: Colors.white),
-                                        ),
-                                        child: CircleAvatar(
-                                          radius: screenWidth * 0.05,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 220, 218, 218),
-                                          child: Icon(Icons.add,
-                                              color: Colors.grey,
-                                              size: screenWidth * 0.05),
                                         ),
                                       ),
                                     ),
@@ -267,80 +237,78 @@ class _ProfileEditState extends State<ProfileEdit> {
                         ),
                       ],
                     ),
-                    SizedBox(height: screenHeight * 0.06),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildTextField("Full name", "Enter your name",
-                              fullNameController),
-                          const SizedBox(height: 10),
-                          buildTextField("User name", "Enter your username",
-                              userNameController),
-                          const SizedBox(height: 10),
-                          buildDropdownField("Gender", selectedGender, (value) {
-                            setState(() {
-                              selectedGender = value!;
-                            });
-                          }),
-                          const SizedBox(height: 10),
-                          buildDateField(
-                              "Date of Birth", dateController, context),
-                          const SizedBox(height: 10),
-                          buildTextField("Mobile number", "Enter mobile number",
-                              mobileNumberController),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: screenHeight * 0.03),
-                  ],
-                ),
-              ),
-            ),
-
-            // Buttons fixed at bottom
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.05,
-                vertical: screenHeight * 0.02,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Skip",
-                      style: TextStyle(
-                        color: const Color(0xFF411ACC),
-                        fontSize: screenWidth * 0.045,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  SizedBox(height: screenHeight * 0.02),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildTextField(
+                            "Full name", "Enter your name", fullNameController),
+                        const SizedBox(height: 10),
+                        buildTextField("User name", "Enter your username",
+                            userNameController),
+                        const SizedBox(height: 10),
+                        buildDropdownField("Gender", selectedGender, (value) {
+                          setState(() {
+                            selectedGender = value!;
+                          });
+                        }),
+                        const SizedBox(height: 10),
+                        buildDateField(
+                            "Date of Birth", dateController, context),
+                        const SizedBox(height: 10),
+                        buildTextField("Mobile number", "Enter mobile number",
+                            mobileNumberController),
+                      ],
                     ),
                   ),
-                  GradientButtonWidget(
-                    size: Size(screenWidth * 0.4, screenHeight * 0.06),
-                    text: "Create Wallet",
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProfileWallet(
-                            userName: userNameController.text,
-                            fullName: fullNameController.text,
-                            profileImage: _selectedImage,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  SizedBox(height: screenHeight * 0.03),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05,
+              vertical: screenHeight * 0.02,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    "Skip",
+                    style: TextStyle(
+                      color: const Color(0xFF411ACC),
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                GradientButtonWidget(
+                  size: Size(screenWidth * 0.4, screenHeight * 0.06),
+                  text: "Create Wallet",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileWallet(
+                          userName: userNameController.text,
+                          fullName: fullNameController.text,
+                          profileImage: _selectedImage,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
